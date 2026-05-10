@@ -1,12 +1,25 @@
-import express, { Request, Response } from "express"
-
-
+import express from "express"
+import dotenv from 'dotenv'
+dotenv.config()
+import cors from 'cors'
+import routes from './routes/index.route'
+import bodyParser from 'body-parser'
+import * as database from './config/database'
 const app = express()
-const port = process.env.PORT;
 
-app.get('/', (req: Request, res: Response) => {
-  res.send('Hello World!')
-})
+const port = process.env.PORT || 4000;
+database.connect()
+// Cho phép gửi dữ liệu dạng JSON
+app.use(express.json());
+// Cấu hình CORS
+app.use(cors({
+  origin: "http://localhost:3000",
+  methods: ['GET', 'PATCH', 'POST', "DELETE"],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}))
+// Thiết lập đường dẫn
+app.use('/', routes)
+
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`)
