@@ -4,6 +4,7 @@ dotenv.config()
 import cors from 'cors'
 import routes from './routes/index.route'
 import bodyParser from 'body-parser'
+import cookieParser from 'cookie-parser'
 import * as database from './config/database'
 const app = express()
 
@@ -13,10 +14,14 @@ database.connect()
 app.use(express.json());
 // Cấu hình CORS
 app.use(cors({
-  origin: "http://localhost:3000",
+  origin: "http://localhost:3001",
   methods: ['GET', 'PATCH', 'POST', "DELETE"],
-  allowedHeaders: ['Content-Type', 'Authorization']
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true // Cho phép gửi cookie
 }))
+
+app.use(cookieParser())
+
 // Thiết lập đường dẫn
 app.use('/', routes)
 
