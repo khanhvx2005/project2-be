@@ -14,7 +14,7 @@ database.connect()
 app.use(express.json());
 // Cấu hình CORS
 app.use(cors({
-  origin: "http://localhost:3001",
+  origin: "http://localhost:3000",
   methods: ['GET', 'PATCH', 'POST', "DELETE"],
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true // Cho phép gửi cookie

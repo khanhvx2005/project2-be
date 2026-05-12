@@ -47,4 +47,11 @@ const check = async (req: Request, res: Response) => {
   }
 
 }
-export { check }
+const logout = async (req: Request, res: Response) => {
+  res.clearCookie("token")
+  res.json({
+    code: "success",
+    message: "Đăng xuất thành công"
+  })
+}
+export { check, logout }
