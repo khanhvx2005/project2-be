@@ -25,7 +25,8 @@ const check = async (req: Request, res: Response) => {
         id: exitsAccountUser.id,
         fullName: exitsAccountUser.fullName,
         email: exitsAccountUser.email,
-
+        avatar: exitsAccountUser.avatar,
+        phone: exitsAccountUser.phone
       }
       res.json({
         code: "success",
