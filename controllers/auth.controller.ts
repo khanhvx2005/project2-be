@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import jwt from 'jsonwebtoken'
 import AccountUser from "../model/account-user.model";
+import AccountCompany from "../model/account-company.model";
 const check = async (req: Request, res: Response) => {
 
   try {
@@ -15,29 +16,51 @@ const check = async (req: Request, res: Response) => {
     }
     const decoded = jwt.verify(token, `${process.env.JWT_SECRET}`) as jwt.JwtPayload;
     const { id, email } = decoded;
-    const exitsAccount = await AccountUser.findOne({
+    const exitsAccountUser = await AccountUser.findOne({
       _id: id,
       email: email
     })
-    if (!exitsAccount) {
+    if (exitsAccountUser) {
+      const infoUser = {
+        id: exitsAccountUser.id,
+        fullName: exitsAccountUser.fullName,
+        email: exitsAccountUser.email,
+
+      }
+      res.json({
+        code: "success",
+        message: "Token hợp lệ!",
+        infoUser: infoUser
+      })
+      return;
+    }
+    const exitsAccountCompany = await AccountCompany.findOne({
+      _id: id,
+      email: email
+    })
+    if (exitsAccountCompany) {
+      const infoCompany = {
+        id: exitsAccountCompany.id,
+        companyName: exitsAccountCompany.companyName,
+        email: exitsAccountCompany.email,
+
+      }
+      res.json({
+        code: "success",
+        message: "Token hợp lệ!",
+        infoCompany: infoCompany
+      })
+      return;
+    }
+    if (!exitsAccountUser && !exitsAccountCompany) {
       res.clearCookie("token")
       res.json({
         code: "error",
         message: "Token không hợp lệ!"
       })
-      return;
     }
-    const infoUser = {
-      id: exitsAccount.id,
-      fullName: exitsAccount.fullName,
-      email: exitsAccount.email,
 
-    }
-    res.json({
-      code: "success",
-      message: "Token hợp lệ!",
-      infoUser: infoUser
-    })
+
   } catch (error) {
     res.clearCookie("token")
     res.json({

@@ -1,6 +1,8 @@
 import { Request, Response } from "express";
 import AccountCompany from "../model/account-company.model";
 import bcrypt from "bcryptjs";
+import jwt from 'jsonwebtoken';
+
 const register = async (req: Request, res: Response) => {
   const { companyName, email, password } = req.body;
   const exitsAccount = await AccountCompany.findOne({
@@ -26,4 +28,44 @@ const register = async (req: Request, res: Response) => {
     message: "Đăng ký thành công!"
   })
 }
-export { register }
+const login = async (req: Request, res: Response) => {
+  const { email, password } = req.body;
+  const exitsAccount = await AccountCompany.findOne({
+    email: email
+  })
+  if (!exitsAccount) {
+    res.json({
+      code: "error",
+      message: "Email không hợp lệ!"
+    })
+    return;
+  }
+  const isPasswordValid = await bcrypt.compare(password, `${exitsAccount.password}`);
+  if (!isPasswordValid) {
+    res.json({
+      code: "error",
+      message: "Sai mật khẩu"
+    })
+    return;
+  }
+  const token = jwt.sign(
+    {
+      id: exitsAccount.id,
+      email: exitsAccount.email
+    },
+    `${process.env.JWT_SECRET}`,
+    { expiresIn: '1d' }
+  );
+  res.cookie("token", token, {
+    httpOnly: true,
+    maxAge: 24 * 60 * 60 * 1000,
+    secure: process.env.NODE_ENV === "production" ? true : false,
+    sameSite: 'lax'
+  })
+
+  res.json({
+    code: "success",
+    message: "Đăng nhập thành công"
+  })
+}
+export { register, login }
