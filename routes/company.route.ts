@@ -15,4 +15,9 @@ router.patch('/profile',
   upload.single('logo'),
   authMiddleware.verifyTokenCompany,
   companyController.profile)
+
+router.post('/job/create',
+  upload.array('images', 12),
+  authMiddleware.verifyTokenCompany,
+  companyController.createJob)
 export default router;

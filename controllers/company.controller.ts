@@ -3,6 +3,7 @@ import AccountCompany from "../model/account-company.model";
 import bcrypt from "bcryptjs";
 import jwt from 'jsonwebtoken';
 import { AccountRequest } from "../interfaces/request.interface";
+import Job from "../model/job.model";
 const register = async (req: Request, res: Response) => {
   const { companyName, email, password } = req.body;
   const exitsAccount = await AccountCompany.findOne({
@@ -28,6 +29,7 @@ const register = async (req: Request, res: Response) => {
     message: "Đăng ký thành công!"
   })
 }
+
 const login = async (req: Request, res: Response) => {
   const { email, password } = req.body;
   const exitsAccount = await AccountCompany.findOne({
@@ -68,6 +70,7 @@ const login = async (req: Request, res: Response) => {
     message: "Đăng nhập thành công"
   })
 }
+
 const profile = async (req: AccountRequest, res: Response) => {
 
   if (req.file) {
@@ -83,4 +86,24 @@ const profile = async (req: AccountRequest, res: Response) => {
     message: "Cập nhập thành công"
   })
 }
-export { register, login, profile }
+
+const createJob = async (req: AccountRequest, res: Response) => {
+  req.body.companyId = req.account.id;
+  req.body.salaryMin = req.body.salaryMin ? parseInt(req.body.salaryMin) : 0;
+  req.body.salaryMax = req.body.salaryMax ? parseInt(req.body.salaryMax) : 0;
+  req.body.images = [];
+  if (req.files) {
+    for (const item of req.files as any[]) {
+      req.body.images.push(item.path)
+    }
+  }
+  req.body.technologies = req.body.technologies ? req.body.technologies.split(", ") : [];
+  const newJob = new Job(req.body)
+  await newJob.save()
+  res.json({
+    code: "success",
+    message: "Tạo công việc thành công"
+  })
+}
+
+export { register, login, profile, createJob }

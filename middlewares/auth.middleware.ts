@@ -39,6 +39,7 @@ const verifyTokenUser = async (req: AccountRequest, res: Response, next: NextFun
   }
 
 }
+
 const verifyTokenCompany = async (req: AccountRequest, res: Response, next: NextFunction) => {
   try {
     const token = req.cookies.token;
@@ -75,4 +76,5 @@ const verifyTokenCompany = async (req: AccountRequest, res: Response, next: Next
     })
   }
 }
+
 export { verifyTokenUser, verifyTokenCompany }
