@@ -20,4 +20,9 @@ router.post('/job/create',
   upload.array('images', 12),
   authMiddleware.verifyTokenCompany,
   companyController.createJob)
+
+router.get('/job/list',
+  authMiddleware.verifyTokenCompany,
+  companyController.listJob
+)
 export default router;
