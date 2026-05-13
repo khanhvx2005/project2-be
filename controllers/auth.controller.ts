@@ -44,6 +44,15 @@ const check = async (req: Request, res: Response) => {
         id: exitsAccountCompany.id,
         companyName: exitsAccountCompany.companyName,
         email: exitsAccountCompany.email,
+        city: exitsAccountCompany.city,
+        address: exitsAccountCompany.address,
+        companyModel: exitsAccountCompany.companyModel,
+        companyEmployees: exitsAccountCompany.companyEmployees,
+        workingTime: exitsAccountCompany.workingTime,
+        workOvertime: exitsAccountCompany.workOvertime,
+        description: exitsAccountCompany.description,
+        phone: exitsAccountCompany.phone,
+        logo: exitsAccountCompany.logo
 
       }
       res.json({

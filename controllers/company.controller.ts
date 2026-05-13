@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import AccountCompany from "../model/account-company.model";
 import bcrypt from "bcryptjs";
 import jwt from 'jsonwebtoken';
-
+import { AccountRequest } from "../interfaces/request.interface";
 const register = async (req: Request, res: Response) => {
   const { companyName, email, password } = req.body;
   const exitsAccount = await AccountCompany.findOne({
@@ -68,4 +68,19 @@ const login = async (req: Request, res: Response) => {
     message: "Đăng nhập thành công"
   })
 }
-export { register, login }
+const profile = async (req: AccountRequest, res: Response) => {
+
+  if (req.file) {
+    req.body.logo = req.file.path;
+  } else {
+    delete req.body.logo;
+  }
+  await AccountCompany.updateOne({
+    _id: req.account.id
+  }, req.body)
+  res.json({
+    code: "success",
+    message: "Cập nhập thành công"
+  })
+}
+export { register, login, profile }
