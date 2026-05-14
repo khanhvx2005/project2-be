@@ -34,4 +34,9 @@ router.patch('/job/edit/:id',
   upload.array('images', 12),
   authMiddleware.verifyTokenCompany,
   companyController.editJobPatch)
+
+router.delete('/job/delete/:id',
+  authMiddleware.verifyTokenCompany,
+  companyController.deleteJobDel
+)
 export default router;

@@ -214,4 +214,34 @@ const editJobPatch = async (req: AccountRequest, res: Response) => {
     message: "Cập nhập thành công"
   })
 }
-export { register, login, profile, createJob, listJob, editJob, editJobPatch }
+
+const deleteJobDel = async (req: AccountRequest, res: Response) => {
+  try {
+    const id = req.params.id;
+    const jobDetail = await Job.findOne({
+      _id: id,
+      companyId: req.account.id
+    })
+    if (!jobDetail) {
+      res.json({
+        code: "error",
+        message: "id không hợp lệ"
+      })
+      return;
+    }
+    await Job.deleteOne({
+      _id: id
+    })
+    res.json({
+      code: "success",
+      message: "Đã xóa"
+    })
+  } catch (error) {
+    res.json({
+      code: "error",
+      message: "id không hợp lệ"
+    })
+  }
+
+}
+export { register, login, profile, createJob, listJob, editJob, editJobPatch, deleteJobDel }
