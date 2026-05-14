@@ -108,13 +108,34 @@ const createJob = async (req: AccountRequest, res: Response) => {
 }
 
 const listJob = async (req: AccountRequest, res: Response) => {
+  const find = {
+    companyId: req.account.id
+  }
+  // Pagination
+  const totalRecords = await Job.countDocuments(find);
+  const limitItems = 4;
+
+  const totalPage = Math.ceil(totalRecords / limitItems)
+  let currentPage = 1;
+  if (req.query.page) {
+    const page = req.query.page as any;
+    if (page > 0) {
+      currentPage = parseInt(page)
+    }
+  }
+  if (currentPage > totalPage && totalPage > 0) {
+    currentPage = totalPage
+  }
+
+  const skip = (currentPage - 1) * limitItems;
+  // End Pagination
   const jobList = await Job
-    .find({
-      companyId: req.account.id
-    })
+    .find(find)
     .sort({
       createdAt: "desc"
-    });
+    })
+    .limit(limitItems)
+    .skip(skip)
   const city = await City.findOne({
     _id: req.account.city
   })
@@ -138,7 +159,59 @@ const listJob = async (req: AccountRequest, res: Response) => {
 
   res.json({
     code: "success",
-    jobs: dataFinal
+    jobs: dataFinal,
+    totalPage: totalPage
   })
 }
-export { register, login, profile, createJob, listJob }
+
+const editJob = async (req: AccountRequest, res: Response) => {
+  try {
+    const id = req.params.id;
+    const jobDetail = await Job.findOne({
+      _id: id,
+      companyId: req.account.id
+    })
+    if (!jobDetail) {
+      res.json({
+        code: "error",
+        message: "id không hợp lệ"
+      })
+      return;
+    }
+
+    res.json({
+      code: "success",
+      message: "Thành công",
+      jobDetail: jobDetail
+    })
+  } catch (error) {
+    res.json({
+      code: "error",
+      message: "id không hợp lệ"
+    })
+  }
+}
+
+const editJobPatch = async (req: AccountRequest, res: Response) => {
+  const id = req.params.id;
+  req.body.companyId = req.account.id;
+  req.body.salaryMin = req.body.salaryMin ? parseInt(req.body.salaryMin) : 0;
+  req.body.salaryMax = req.body.salaryMax ? parseInt(req.body.salaryMax) : 0;
+  req.body.images = [];
+  if (req.files) {
+    for (const item of req.files as any[]) {
+      req.body.images.push(item.path);
+    }
+  }
+  req.body.technologies = req.body.technologies ? req.body.technologies.split(", ") : [];
+  await Job.updateOne({
+    _id: id,
+    companyId: req.body.companyId
+  }, req.body)
+
+  res.json({
+    code: "success",
+    message: "Cập nhập thành công"
+  })
+}
+export { register, login, profile, createJob, listJob, editJob, editJobPatch }
